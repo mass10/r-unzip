@@ -14,7 +14,7 @@ impl Unzipper {
 		let file_stem = path.file_stem().unwrap().to_str().unwrap();
 		// let filename = path.file_name().unwrap().to_str().unwrap();
 
-		eprintln!("file_stem: {}", file_stem);
+		// eprintln!("file_stem: {}", file_stem);
 
 		let mut unzip = zip::ZipArchive::new(std::fs::File::open(path)?)?;
 		unzip.extract(file_stem)?;
