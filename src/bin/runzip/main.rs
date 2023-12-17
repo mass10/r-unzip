@@ -8,40 +8,48 @@ use getopts;
 
 mod application;
 
+/// コンフィギュレーション
 struct Configuration {
+	options: getopts::Options,
+
+	/// --help: ヘルプ表示
 	pub help: bool,
+
+	/// 残りのオプション
 	pub free: Vec<String>,
 }
 
 impl Configuration {
+	/// コンストラクタ
+	///
+	/// # Returns
+	/// 新しいインスタンスを返します。
 	pub fn new() -> Configuration {
-		return Configuration { help: false, free: Vec::new() };
+		let mut options = getopts::Options::new();
+		// --help: ヘルプ
+		options.opt("h", "help", "Usage.", "", getopts::HasArg::No, getopts::Occur::Optional);
+
+		return Configuration {
+			options: options,
+			help: false,
+			free: Vec::new(),
+		};
+	}
+
+	pub fn usage(&self) {
+		eprintln!("{}", self.options.usage(""));
 	}
 
 	/// コンフィギュレーション
 	pub fn configure(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-		let mut options = getopts::Options::new();
-
-		options.opt("h", "help", "Usage.", "", getopts::HasArg::No, getopts::Occur::Optional);
-
 		let args: Vec<String> = std::env::args().skip(1).collect();
-		let result = options.parse(args);
-		if result.is_err() {
-			let err = result.err().unwrap();
-			eprintln!("Error: {}", err);
-			eprintln!("{}", options.usage(""));
-			std::process::exit(1);
-		}
+		let matches = self.options.parse(args)?;
 
-		let matches = result.unwrap();
+		// --help
+		self.help = matches.opt_present("help");
 
+		// 残りのオプション
 		self.free = matches.free.clone();
-
-		if matches.opt_present("help") {
-			println!("{}", options.usage(""));
-			self.help = true;
-			return Ok(());
-		}
 
 		return Ok(());
 	}
@@ -54,8 +62,19 @@ fn main() {
 	let result = conf.configure();
 	if result.is_err() {
 		let err = result.err().unwrap();
+		let message = err.to_string();
+		if message == "" {
+			// 計画された正常終了です。
+			return;
+		}
 		eprintln!("Error: {}", err);
 		std::process::exit(1);
+	}
+
+	// ヘルプ表示
+	if conf.help {
+		conf.usage();
+		return;
 	}
 
 	// 残りのオプション
