@@ -1,5 +1,5 @@
 //!
-//! r-unzip
+//! r_unzip
 //!
 //! 簡易 unzip ツール
 //!
@@ -36,6 +36,7 @@ impl Configuration {
 		};
 	}
 
+	/// 使用方法を表示します。
 	pub fn usage(&self) {
 		eprintln!("{}", self.options.usage(""));
 	}
