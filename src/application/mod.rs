@@ -1,10 +1,23 @@
+//!
+//! アプリケーション本体を構成する実装
+//!
+
+///
+/// 解凍
+///
 pub struct Unzipper {}
 
 impl Unzipper {
+	///
+	/// 新しいインスタンスを返します。
+	///
 	pub fn new() -> Unzipper {
 		Unzipper {}
 	}
 
+	///
+	/// zip ファイルを解凍します。
+	///
 	pub fn unzip(&self, path: &str) -> Result<(), Box<dyn std::error::Error>> {
 		if !path.ends_with(".zip") {
 			return Err("Not a zip file.".into());
